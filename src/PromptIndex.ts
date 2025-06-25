@@ -60,28 +60,32 @@ export class Prompts {
   reset() {
     fs.rmSync(this.indexPath, { recursive: true, force: true });
     this.index.clear();
-    this.ensureIndex();
   }
 
-  ensureIndex() {
-    if (!this.index) {
-      this.index = this.createIndex();
-    }
-  }
-
-  async create(id: string, text: string) {
+  create(id: string, text: string) {
     // ensure the ID is safe and unique
     // ensure there's not a duplicate template in the index already
 
-    await this.ensureIndex();
     this.ensureDirectoryExists();
     this.index.add(id, text);
     fs.writeFileSync(path.join(this.indexPath, `${id}.md`), text);
   }
 
-  async query(text: string) {
-    await this.ensureIndex();
-    return this.index.search(text);
+  query(text: string) {
+    const results = this.index.search(text);
+    if (results && results.length > 0) {
+      const id = results[0];
+      const prompt = fs.readFileSync(
+        path.join(this.indexPath, `${id}.md`),
+        'utf-8',
+      );
+      return {
+        id,
+        prompt,
+      };
+    }
+    console.error(`No prompt found for ${text}`);
+    return null;
   }
 }
 

@@ -4,12 +4,13 @@ import PromptIndex from '../PromptIndex.js';
 
 const CreatePromptTool: TeleprompterTool = {
   config: {
-    description: 'Create a new Teleprompter prompt.',
+    description:
+      'Create a new Teleprompter prompt. Wrap template variables in double curly braces. For example, "Hello, {{name}}!"',
     inputSchema: {
       id: z
         .string()
         .describe(
-          'The ID, or "tag" for the new prompt. This will be used by the user later on to apply prompt usage with an LLM they are chatting with. For example, ">> new-journal-entry"',
+          'The ID, or "tag" for the new prompt. This will be used by the user later on to apply prompt usage with an LLM they are chatting with. For example, ">> new-journal-entry". IDs must be suitable for use as a file name.',
         ),
       contents: z
         .string()
