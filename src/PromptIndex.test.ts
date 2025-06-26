@@ -42,8 +42,7 @@ describe('PromptIndex', () => {
       const index = new Prompts('/tmp/prompts');
       index.updateIndex();
       expect(consoleSpy).toHaveBeenCalledWith(
-        'Error updating index:',
-        expect.any(Error),
+        '[Teleprompter] - Error updating index: Error: Permission denied',
       );
     } finally {
       consoleSpy.mockRestore();
@@ -62,7 +61,7 @@ describe('PromptIndex', () => {
 
       expect(result).toBeNull();
       expect(consoleSpy).toHaveBeenCalledWith(
-        'No prompt found for nonexistent prompt',
+        '[Teleprompter] - No prompt found for nonexistent prompt',
       );
     } finally {
       consoleSpy.mockRestore();

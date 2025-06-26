@@ -22,7 +22,7 @@ const createCreatePromptTool = (
     },
   },
   cb: async ({ id, contents }: { id: string; contents: string }) => {
-    await promptIndex.create(id, contents);
+    promptIndex.create(id, contents);
     return {
       content: [{ type: 'text', text: 'Prompt successfully created.' }],
     };

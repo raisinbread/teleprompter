@@ -2,6 +2,7 @@ import 'dotenv/config';
 import path from 'path';
 import fs from 'fs';
 import MiniSearch from 'minisearch';
+import logError from './log/LogError';
 
 export class Prompts {
   indexPath: string;
@@ -42,7 +43,7 @@ export class Prompts {
         this.index.addAll(docs);
       }
     } catch (error) {
-      console.error('Error updating index:', error);
+      logError(`Error updating index: ${error}`);
     }
   }
 
@@ -83,7 +84,7 @@ export class Prompts {
         prompt: content,
       };
     }
-    console.error(`No prompt found for ${text}`);
+    logError(`No prompt found for ${text}`);
     return null;
   }
 }
