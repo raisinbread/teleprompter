@@ -8,7 +8,7 @@ describe('PromptIndex', () => {
     await index.reset();
 
     await index.create('test-prompt-1', 'This is a test prompt');
-    const result = await index.query('This is a test prompt');
+    const result = await index.queryByText('This is a test prompt');
 
     expect(result).toEqual({
       id: 'test-prompt-1',
@@ -57,14 +57,53 @@ describe('PromptIndex', () => {
       const index = new Prompts('/tmp/prompts');
       index.reset();
 
-      const result = index.query('nonexistent prompt');
+      const result = index.queryByText('nonexistent prompt');
 
       expect(result).toBeNull();
       expect(consoleSpy).toHaveBeenCalledWith(
-        '[Teleprompter] - No prompt found for nonexistent prompt',
+        '[Teleprompter] - No prompt found for text: nonexistent prompt',
       );
     } finally {
       consoleSpy.mockRestore();
     }
+  });
+
+  it('throws error when creating with invalid ID', async () => {
+    const index = new Prompts('/tmp/prompts');
+    await index.reset();
+    await expect(() => index.create('invalid/id', 'text')).toThrow(
+      "Invalid prompt ID: 'invalid/id'. IDs must be alphanumeric, dashes, or underscores only.",
+    );
+  });
+
+  it('throws error when creating a duplicate ID', async () => {
+    const index = new Prompts('/tmp/prompts');
+    await index.reset();
+    await index.create('dupe', 'first');
+    await expect(() => index.create('dupe', 'second')).toThrow(
+      "Prompt with ID 'dupe' already exists.",
+    );
+  });
+
+  it('queryById returns null and logs error if file does not exist', () => {
+    const index = new Prompts('/tmp/prompts');
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const result = index.queryById('notfound');
+    expect(result).toBeNull();
+    expect(consoleSpy).toHaveBeenCalledWith(
+      '[Teleprompter] - No prompt found for ID notfound',
+    );
+    consoleSpy.mockRestore();
+  });
+
+  it('queryByText returns null and logs error if no results', () => {
+    const index = new Prompts('/tmp/prompts');
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const result = index.queryByText('no-such-content');
+    expect(result).toBeNull();
+    expect(consoleSpy).toHaveBeenCalledWith(
+      '[Teleprompter] - No prompt found for text: no-such-content',
+    );
+    consoleSpy.mockRestore();
   });
 });

@@ -66,16 +66,38 @@ export class Prompts {
     this.index.removeAll();
   }
 
-  create(id: string, text: string) {
-    // ensure the ID is safe and unique
-    // ensure there's not a duplicate template in the index already
-
-    this.ensureDirectoryExists();
-    this.index.add({ id, content: text });
-    fs.writeFileSync(path.join(this.indexPath, `${id}.md`), text);
+  private validateId(id: string) {
+    if (!/^[a-zA-Z0-9_-]+$/.test(id)) {
+      throw new Error(
+        `Invalid prompt ID: '${id}'. IDs must be alphanumeric, dashes, or underscores only.`,
+      );
+    }
   }
 
-  query(text: string) {
+  create(id: string, text: string) {
+    this.validateId(id);
+    this.ensureDirectoryExists();
+    // Check for duplicate
+    const filePath = path.join(this.indexPath, `${id}.md`);
+    if (fs.existsSync(filePath)) {
+      throw new Error(`Prompt with ID '${id}' already exists.`);
+    }
+    this.index.add({ id, content: text });
+    fs.writeFileSync(filePath, text);
+  }
+
+  queryById(id: string) {
+    this.validateId(id);
+    const filePath = path.join(this.indexPath, `${id}.md`);
+    if (!fs.existsSync(filePath)) {
+      logError(`No prompt found for ID ${id}`);
+      return null;
+    }
+    const content = fs.readFileSync(filePath, 'utf-8');
+    return { id, prompt: content };
+  }
+
+  queryByText(text: string) {
     const results = this.index.search(text);
     if (results && results.length > 0) {
       const { id, content } = results[0];
@@ -84,7 +106,7 @@ export class Prompts {
         prompt: content,
       };
     }
-    logError(`No prompt found for ${text}`);
+    logError(`No prompt found for text: ${text}`);
     return null;
   }
 }

@@ -21,7 +21,20 @@ const createCreatePromptTool = (
         ),
     },
   },
-  cb: async ({ id, contents }: { id: string; contents: string }) => {
+  cb: async (input: { id: string; contents: string }) => {
+    const schema = z.object({
+      id: z
+        .string()
+        .describe(
+          'The ID, or "tag" for the new prompt. This will be used by the user later on to apply prompt usage with an LLM they are chatting with. For example, ">> new-journal-entry". IDs must be suitable for use as a file name.',
+        ),
+      contents: z
+        .string()
+        .describe(
+          'The contents of the prompt, with variables placeholders marked with double curly braces. For example, "Hello, {{name}}!"',
+        ),
+    });
+    const { id, contents } = schema.parse(input);
     promptIndex.create(id, contents);
     return {
       content: [{ type: 'text', text: 'Prompt successfully created.' }],

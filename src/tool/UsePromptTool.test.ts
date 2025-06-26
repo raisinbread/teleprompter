@@ -5,7 +5,7 @@ import { Prompts } from '../PromptIndex.js';
 describe('UsePromptTool', () => {
   it('should use the injected PromptIndex to fetch prompts', async () => {
     const mockPromptIndex = {
-      query: vi.fn().mockResolvedValue({
+      queryById: vi.fn().mockResolvedValue({
         id: 'test-prompt',
         prompt: 'This is a test prompt with {{variable}}',
       }),
@@ -19,12 +19,12 @@ describe('UsePromptTool', () => {
         { type: 'text', text: 'This is a test prompt with {{variable}}' },
       ],
     });
-    expect(mockPromptIndex.query).toHaveBeenCalledWith('test-prompt');
+    expect(mockPromptIndex.queryById).toHaveBeenCalledWith('test-prompt');
   });
 
   it('returns "Prompt not found." when the prompt does not exist', async () => {
     const mockPromptIndex = {
-      query: vi.fn().mockResolvedValue(null),
+      queryById: vi.fn().mockResolvedValue(null),
     } as unknown as Prompts;
 
     const usePromptTool = createUsePromptTool(mockPromptIndex);
@@ -33,6 +33,6 @@ describe('UsePromptTool', () => {
     expect(result).toEqual({
       content: [{ type: 'text', text: 'Prompt not found.' }],
     });
-    expect(mockPromptIndex.query).toHaveBeenCalledWith('missing-prompt');
+    expect(mockPromptIndex.queryById).toHaveBeenCalledWith('missing-prompt');
   });
 });

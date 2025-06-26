@@ -12,8 +12,12 @@ const createUsePromptTool = (
       id: z.string().describe('The ID of the prompt to use.'),
     },
   },
-  cb: async ({ id }: { id: string }) => {
-    const result = await promptIndex.query(id);
+  cb: async (input: { id: string }) => {
+    const schema = z.object({
+      id: z.string().describe('The ID of the prompt to use.'),
+    });
+    const { id } = schema.parse(input);
+    const result = await promptIndex.queryById(id);
     const prompt = result?.prompt ?? 'Prompt not found.';
     return {
       content: [{ type: 'text', text: prompt }],
