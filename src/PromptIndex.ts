@@ -5,8 +5,8 @@ import MiniSearch from 'minisearch';
 import logError from './log/LogError';
 
 export class Prompts {
-  indexPath: string;
-  index: MiniSearch<{ id: string; content: string }>;
+  readonly indexPath: string;
+  readonly index: MiniSearch<{ id: string; content: string }>;
 
   constructor(indexPath?: string) {
     if (!process.env.PROMPT_STORAGE_PATH) {

@@ -6,11 +6,11 @@ import type {
 } from '@modelcontextprotocol/sdk/types.js';
 
 export type TeleprompterTool = {
-  config: {
-    description?: string;
-    inputSchema?: InputArgs;
-    outputSchema?: OutputArgs;
-    annotations?: ToolAnnotations;
+  readonly config: {
+    readonly description?: string;
+    readonly inputSchema?: InputArgs;
+    readonly outputSchema?: OutputArgs;
+    readonly annotations?: ToolAnnotations;
   };
-  cb: ToolCallback<InputArgs>;
+  readonly cb: ToolCallback<InputArgs>;
 };
