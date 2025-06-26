@@ -21,4 +21,18 @@ describe('UsePromptTool', () => {
     });
     expect(mockPromptIndex.query).toHaveBeenCalledWith('test-prompt');
   });
+
+  it('returns "Prompt not found." when the prompt does not exist', async () => {
+    const mockPromptIndex = {
+      query: vi.fn().mockResolvedValue(null),
+    } as unknown as Prompts;
+
+    const usePromptTool = createUsePromptTool(mockPromptIndex);
+    const result = await usePromptTool.cb({ id: 'missing-prompt' });
+
+    expect(result).toEqual({
+      content: [{ type: 'text', text: 'Prompt not found.' }],
+    });
+    expect(mockPromptIndex.query).toHaveBeenCalledWith('missing-prompt');
+  });
 });
