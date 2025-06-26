@@ -2,7 +2,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 
 import CreatePromptTool from './tool/CreatePromptTool.js';
-import { TeleprompterTool } from './tool/TeleprompterTool.js';
+import { TeleprompterTool } from './types/TeleprompterTool.js';
 import UsePromptTool from './tool/UsePromptTool.js';
 
 export const server = new McpServer({

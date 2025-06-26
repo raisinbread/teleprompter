@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { TeleprompterTool } from './TeleprompterTool.d.ts';
+import type { TeleprompterTool } from '../types/TeleprompterTool.d.ts';
 import PromptIndex, { Prompts } from '../PromptIndex.js';
 
 const createCreatePromptTool = (
