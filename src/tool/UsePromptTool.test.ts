@@ -15,10 +15,9 @@ describe('UsePromptTool', () => {
     const result = await usePromptTool.cb({ id: 'test-prompt' });
 
     expect(result).toEqual({
-      prompt: {
-        id: 'test-prompt',
-        prompt: 'This is a test prompt with {{variable}}',
-      },
+      content: [
+        { type: 'text', text: 'This is a test prompt with {{variable}}' },
+      ],
     });
     expect(mockPromptIndex.query).toHaveBeenCalledWith('test-prompt');
   });

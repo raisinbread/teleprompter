@@ -3,6 +3,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 
 import CreatePromptTool from './tool/CreatePromptTool.js';
 import { TeleprompterTool } from './tool/TeleprompterTool.js';
+import UsePromptTool from './tool/UsePromptTool.js';
 
 export const server = new McpServer({
   name: 'Teleprompter',
@@ -14,6 +15,7 @@ const register = (name: string, tool: TeleprompterTool) => {
 };
 
 register('createPrompt', CreatePromptTool);
+register('usePrompt', UsePromptTool);
 
 const transport = new StdioServerTransport();
 await server.connect(transport);

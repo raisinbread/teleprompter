@@ -1,8 +1,10 @@
 import { z } from 'zod';
 import type { TeleprompterTool } from './TeleprompterTool.d.ts';
-import PromptIndex from '../PromptIndex.js';
+import PromptIndex, { Prompts } from '../PromptIndex.js';
 
-const CreatePromptTool: TeleprompterTool = {
+const createCreatePromptTool = (
+  promptIndex: Prompts = PromptIndex,
+): TeleprompterTool => ({
   config: {
     description:
       'Create a new Teleprompter prompt. Wrap template variables in double curly braces. For example, "Hello, {{name}}!"',
@@ -18,19 +20,14 @@ const CreatePromptTool: TeleprompterTool = {
           'The contents of the prompt, with variables placeholders marked with double curly braces. For example, "Hello, {{name}}!"',
         ),
     },
-    outputSchema: {
-      success: z
-        .boolean()
-        .describe('Whether the prompt was created successfully.'),
-    },
   },
   cb: async ({ id, contents }: { id: string; contents: string }) => {
-    await PromptIndex.create(id, contents);
+    await promptIndex.create(id, contents);
     return {
-      content: [{ type: 'text', text: 'Prompt successfully created!' }],
-      success: true,
+      content: [{ type: 'text', text: 'Prompt successfully created.' }],
     };
   },
-};
+});
 
-export default CreatePromptTool;
+export { createCreatePromptTool };
+export default createCreatePromptTool();

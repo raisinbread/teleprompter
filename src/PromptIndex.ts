@@ -1,11 +1,11 @@
 import 'dotenv/config';
 import path from 'path';
 import fs from 'fs';
-import { Index } from 'flexsearch';
+import MiniSearch from 'minisearch';
 
 export class Prompts {
   indexPath: string;
-  index: Index;
+  index: MiniSearch<{ id: string; content: string }>;
 
   constructor(indexPath?: string) {
     if (!process.env.PROMPT_STORAGE_PATH) {
@@ -21,7 +21,7 @@ export class Prompts {
 
   updateIndex() {
     this.ensureDirectoryExists();
-    this.index.clear();
+    this.index.removeAll();
 
     try {
       const files = fs.readdirSync(this.indexPath, {
@@ -29,14 +29,17 @@ export class Prompts {
         withFileTypes: true,
       });
 
+      const docs = [];
       for (const file of files) {
         if (file.isFile() && file.name.endsWith('.md')) {
           const filePath = path.join(file.parentPath, file.name);
           const id = path.basename(file.name, '.md');
           const content = fs.readFileSync(filePath, 'utf-8');
-
-          this.index.add(id, content);
+          docs.push({ id, content });
         }
+      }
+      if (docs.length > 0) {
+        this.index.addAll(docs);
       }
     } catch (error) {
       console.error('Error updating index:', error);
@@ -44,10 +47,10 @@ export class Prompts {
   }
 
   createIndex() {
-    return new Index({
-      preset: 'performance',
-      tokenize: 'forward',
-      resolution: 9,
+    return new MiniSearch<{ id: string; content: string }>({
+      fields: ['content'],
+      storeFields: ['id', 'content'],
+      idField: 'id',
     });
   }
 
@@ -59,7 +62,7 @@ export class Prompts {
 
   reset() {
     fs.rmSync(this.indexPath, { recursive: true, force: true });
-    this.index.clear();
+    this.index.removeAll();
   }
 
   create(id: string, text: string) {
@@ -67,21 +70,17 @@ export class Prompts {
     // ensure there's not a duplicate template in the index already
 
     this.ensureDirectoryExists();
-    this.index.add(id, text);
+    this.index.add({ id, content: text });
     fs.writeFileSync(path.join(this.indexPath, `${id}.md`), text);
   }
 
   query(text: string) {
     const results = this.index.search(text);
     if (results && results.length > 0) {
-      const id = results[0];
-      const prompt = fs.readFileSync(
-        path.join(this.indexPath, `${id}.md`),
-        'utf-8',
-      );
+      const { id, content } = results[0];
       return {
         id,
-        prompt,
+        prompt: content,
       };
     }
     console.error(`No prompt found for ${text}`);

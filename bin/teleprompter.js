@@ -5,10 +5,10 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const indexPath = join(__dirname, '..', 'src', 'index.ts');
+const indexPath = join(__dirname, '..', 'dist', 'src', 'index.js');
 
-// Use tsx to run the TypeScript file directly
-const child = spawn('npx', ['tsx', indexPath], {
+// Run the compiled JavaScript file with Node
+const child = spawn(process.execPath, [indexPath], {
   stdio: 'inherit',
   cwd: dirname(__dirname)
 });
