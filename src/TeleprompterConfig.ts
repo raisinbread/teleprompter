@@ -1,0 +1,1 @@
+export const MAX_PROMPT_PREVIEW_LENGTH = 200;
