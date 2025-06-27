@@ -6,7 +6,7 @@ describe('Server startup', () => {
   it('happens without error', async () => {
     let error: unknown = null;
     try {
-      await import('./index');
+      await import('./index.js');
     } catch (err) {
       error = err;
     }

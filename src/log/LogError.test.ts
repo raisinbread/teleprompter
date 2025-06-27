@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import logError from './LogError';
+import logError from './LogError.js';
 
 describe('logError', () => {
   const originalConsoleError = console.error;

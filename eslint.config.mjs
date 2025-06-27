@@ -3,11 +3,11 @@
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import globals from 'globals';
+import pluginImport from 'eslint-plugin-import';
 
 export default tseslint.config(
-  eslint.configs.recommended,
-  ...tseslint.configs.recommended,
   {
+    ignores: ['dist/', 'coverage/', 'coverage/**'],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module',
@@ -15,6 +15,9 @@ export default tseslint.config(
         ...globals.browser,
         ...globals.node,
       },
+    },
+    plugins: {
+      import: pluginImport,
     },
     rules: {
       '@typescript-eslint/no-unused-vars': [
@@ -29,6 +32,18 @@ export default tseslint.config(
           ignoreRestSiblings: true,
         },
       ],
+      'import/extensions': [
+        'error',
+        'ignorePackages',
+        {
+          js: 'always',
+          jsx: 'always',
+          ts: 'never',
+          tsx: 'never',
+        },
+      ],
     },
   },
+  eslint.configs.recommended,
+  tseslint.configs.recommended,
 ); 

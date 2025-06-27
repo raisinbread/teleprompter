@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { Prompts } from './PromptIndex';
+import { Prompts } from './PromptIndex.js';
 import fs from 'fs';
 
 describe('PromptIndex', () => {

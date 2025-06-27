@@ -2,7 +2,7 @@ import 'dotenv/config';
 import path from 'path';
 import fs from 'fs';
 import MiniSearch from 'minisearch';
-import logError from './log/LogError';
+import logError from './log/LogError.js';
 
 export class Prompts {
   readonly indexPath: string;
