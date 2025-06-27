@@ -109,6 +109,36 @@ export class Prompts {
     logError(`No prompt found for text: ${text}`);
     return null;
   }
+
+  search(text: string, limit = 5) {
+    const results = this.index.search(text);
+    return results
+      .slice(0, limit)
+      .map(({ id, content }) => ({ id, prompt: content }));
+  }
+
+  listAll() {
+    this.ensureDirectoryExists();
+    try {
+      const files = fs.readdirSync(this.indexPath, {
+        recursive: true,
+        withFileTypes: true,
+      });
+      const prompts = [];
+      for (const file of files) {
+        if (file.isFile() && file.name.endsWith('.md')) {
+          const filePath = path.join(file.parentPath, file.name);
+          const id = path.basename(file.name, '.md');
+          const content = fs.readFileSync(filePath, 'utf-8');
+          prompts.push({ id, prompt: content });
+        }
+      }
+      return prompts;
+    } catch (error) {
+      logError(`Error listing prompts: ${error}`);
+      return [];
+    }
+  }
 }
 
 const PromptIndex = new Prompts();
