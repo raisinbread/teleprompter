@@ -1,20 +1,22 @@
 # Teleprompter
 
+<div align="center">
+  <img src="assets/logo.png" alt="Teleprompter Logo" width="200"/>
+</div>
+
 An MCP server that manages and exposes tools to allow prompt re-use with LLMs.
 
 ---
 
 ## Table of Contents
 - [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
+- [MCP Configuration](#mcp-configuration)
+- [Usage Examples](#usage-examples)
 - [Environment Variables](#environment-variables)
-- [Examples](#examples)
 - [Testing](#testing)
 - [Contributing](#contributing)
 - [License](#license)
 - [Acknowledgements](#acknowledgements)
-- [MCP Configuration Example](#mcp-configuration-example)
 
 ---
 
@@ -26,81 +28,128 @@ An MCP server that manages and exposes tools to allow prompt re-use with LLMs.
 - **TypeScript:** Modern, type-safe codebase.
 - **Extensive Testing:** Includes unit and integration tests with [Vitest](https://vitest.dev/).
 
----
+## MCP Configuration
 
-## Installation
+To use Teleprompter with your LLM client, add this configuration:
 
-1. **Clone the repository:**
-   ```sh
-   git clone <your-repo-url>
-   cd teleprompter
-   ```
-2. **Install dependencies:**
-   ```sh
-   npm install
-   ```
-3. **Build the project:**
-   ```sh
-   npm run build
-   ```
-
----
-
-## Usage
-
-### 1. Set up environment variables
-Create a `.env` file in the project root with the following:
-```env
-PROMPT_STORAGE_PATH=./prompts
-```
-- `PROMPT_STORAGE_PATH` is required. It specifies the directory where prompt files are stored.
-
-### 2. Start the server
-```sh
-npm run build
-npx teleprompter
-```
-Or, if installed globally:
-```sh
-teleprompter
-```
-
-The server will start and expose MCP tools for prompt management.
-
----
-
-## Environment Variables
-| Variable              | Required | Description                                      |
-|-----------------------|----------|--------------------------------------------------|
-| `PROMPT_STORAGE_PATH` | Yes      | Directory path for storing prompt `.md` files.    |
-
-If not set, the server will throw an error on startup.
-
----
-
-## Examples
-
-### Creating a Prompt
-You can use the `createPrompt` tool to add a new prompt:
 ```json
 {
-  "id": "new-journal-entry",
-  "contents": "Today I feel {{mood}} because {{reason}}."
+  "mcpServers": {
+    "teleprompter": {
+      "command": "npx",
+      "args": ["-y", "teleprompter"],
+      "env": {
+        "PROMPT_STORAGE_PATH": "/path/to/your/prompts-directory"
+      }
+    }
+  }
 }
 ```
-- IDs must be alphanumeric, dashes, or underscores only.
-- Template variables are wrapped in double curly braces.
 
-### Using a Prompt
-You can use the `usePrompt` tool to fetch and fill a prompt by ID:
-```json
-{
-  "id": "new-journal-entry"
-}
-```
-If the prompt contains variables, fill them in based on your session or ask the user for values.
+
+**Note:** Replace `/path/to/your/prompts-directory` with the absolute path where you want prompts stored.
 
 ---
+
+## Usage Examples
+
+Once configured, you can use Teleprompter with your LLM by using prompt tags in your conversations. Here's a detailed example that shows how it solves the problem of repeating complex instructions:
+
+### 🎵 Music Discovery on Spotify
+
+**The Problem:** Every time you want music recommendations, you have to remind your LLM of all your preferences and constraints:
+- "Don't suggest songs I already have in my playlists"
+- "Avoid explicit lyrics"
+- "Add songs to my queue for review, not directly to playlists"
+- "Focus on discovering new artists, not just popular hits"
+- "Consider my current activity and mood"
+- "Provide brief explanations for why each song fits"
+
+**The Solution:** Create a prompt that captures all these instructions once.
+
+**Creating the prompt:**
+Ask your LLM: "Create a prompt called 'spotify-discover' that helps me find new music with all my specific preferences and workflow requirements."
+
+This creates a comprehensive template like:
+```markdown
+I'm looking for music recommendations for Spotify based on:
+
+**Current mood:** {{mood}}
+**Activity/setting:** {{activity}}
+**Preferred genres:** {{genres}}
+**Recent artists I've enjoyed:** {{recent_artists}}
+
+**Important constraints:**
+- DO NOT suggest songs I already have in my existing playlists
+- Avoid explicit lyrics (clean versions only)
+- Focus on discovering new/lesser-known artists, not just popular hits
+- Provide 5-7 song recommendations maximum
+
+**Workflow:**
+- Add recommendations to my Spotify queue (not directly to playlists)
+- I'll review and save the ones I like to appropriate playlists later
+
+**For each recommendation, include:**
+- Artist and song name
+- Brief explanation (1-2 sentences) of why it fits my current mood/activity
+- Similar artists I might also enjoy
+
+Please help me discover music that matches this vibe while following these preferences.
+```
+
+**Using it:**
+```
+>> spotify-discover
+```
+Now you just fill in your current mood and activity, and get perfectly tailored recommendations that follow all your rules—no need to repeat your constraints every time.
+
+### 🔄 Other Common Use Cases
+
+**📋 Work Ticket Management**
+- Create prompts for JIRA/Linear ticket formatting with your team's specific requirements
+- Include standard fields, priority levels, acceptance criteria templates
+- Avoid repeating your company's ticket standards every time
+
+**📧 Email Templates**
+- Customer support responses with your company's tone and required disclaimers
+- Follow-up sequences that match your communication style
+- Automated inclusion of signatures, links, and standard information
+
+**📝 Code Review Guidelines**
+- Technical review checklists with your team's specific standards
+- Security considerations and performance criteria
+- Documentation requirements and testing expectations
+
+The common thread: **stop repeating yourself**. If you find yourself giving the same detailed instructions to your LLM repeatedly, create a prompt for it.
+
+### 🔍 Discovering Existing Prompts
+
+You can search your prompt library:
+```
+Can you search my prompts for "productivity" or "task management"?
+```
+
+Or list all available prompts:
+```
+What prompts do I have available?
+```
+
+### ✏️ Manual Editing
+
+Prompts are stored as simple markdown files in your `PROMPT_STORAGE_PATH` directory. You can also create and edit them directly with your favorite text editor:
+
+- Each prompt is saved as `{id}.md` in your prompts directory
+- Use `{{variable_name}}` syntax for template variables
+- Standard markdown formatting is supported
+- File changes are automatically picked up by the server
+
+### 💡 Best Practices
+
+1. **Use descriptive IDs:** Choose prompt IDs that clearly indicate their purpose (e.g., `meeting-notes`, `code-review-checklist`)
+
+2. **Include helpful variables:** Use `{{variable_name}}` for dynamic content that changes each time you use the prompt
+
+3. **Organize by category:** Consider using prefixes like `task-`, `content-`, `analysis-` to group related prompts
 
 ## Testing
 
@@ -123,8 +172,6 @@ Tests are written with [Vitest](https://vitest.dev/). Coverage reports are gener
 Contributions are welcome! Please:
 - Follow the existing code style (see `.prettierrc.json` and `.eslintrc.mjs`).
 - Add tests for new features or bug fixes.
-- Document public classes and methods with JSDoc.
-- See `todo.md` for ideas and areas for improvement.
 
 ---
 
@@ -140,29 +187,6 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 - [Vitest](https://vitest.dev/)
 - [Zod](https://zod.dev/)
 - [dotenv](https://github.com/motdotla/dotenv)
-
----
-
-## MCP Configuration Example
-
-To use Teleprompter as an MCP tool, add a configuration similar to the following in your MCP client or orchestrator:
-
-```json
-"teleprompter": {
-  "command": "/path/to/node",
-  "cwd": "/path/to/teleprompter",
-  "args": [
-    "/path/to/teleprompter/dist/src/index.js"
-  ],
-  "env": {
-    "PROMPT_STORAGE_PATH": "/path/to/prompts-directory"
-  }
-}
-```
-
-- Replace `/path/to/node` with the path to your Node.js executable (e.g., `/usr/bin/node` or output of `which node`).
-- Replace `/path/to/teleprompter` with the root directory of your Teleprompter project.
-- Replace `/path/to/prompts-directory` with the directory where you want prompts to be stored.
 
 ---
 
