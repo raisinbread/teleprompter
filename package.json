@@ -2,19 +2,29 @@
   "name": "teleprompter",
   "version": "1.0.0",
   "description": "An MCP server that manages and exposes tools to allow prompt re-use with LLMs.",
-  "main": "index.js",
+  "main": "dist/src/index.js",
   "type": "module",
   "bin": {
-    "teleprompter": "./bin/teleprompter.js"
+    "teleprompter": "bin/teleprompter.js"
+  },
+  "files": [
+    "dist/",
+    "bin/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
   },
   "scripts": {
     "lint": "npm run lint:eslint && npm run lint:types",
     "lint:eslint": "eslint . --ignore-pattern \"dist/\"",
     "lint:types": "tsc",
     "prepare": "husky",
-    "test": "NODE_ENV=test vitest",
+    "test": "NODE_ENV=test vitest --run",
     "test:coverage": "NODE_ENV=test vitest --coverage --run",
-    "build": "swc src -d dist --copy-files"
+    "build": "swc src -d dist --copy-files",
+    "prepublishOnly": "npm run build && npm test"
   },
   "keywords": [
     "mcp",
@@ -24,6 +34,14 @@
   ],
   "author": "John Anderson",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raisinbread/teleprompter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/raisinbread/teleprompter/issues"
+  },
+  "homepage": "https://github.com/raisinbread/teleprompter#readme",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1",
     "dotenv": "^16.5.0",
