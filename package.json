@@ -1,6 +1,6 @@
 {
   "name": "mcp-teleprompter",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "An MCP server that manages and exposes tools to allow prompt re-use with LLMs.",
   "main": "dist/src/index.js",
   "type": "module",
