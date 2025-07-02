@@ -37,7 +37,7 @@ To use Teleprompter with your LLM client, add this configuration:
   "mcpServers": {
     "teleprompter": {
       "command": "npx",
-      "args": ["-y", "teleprompter"],
+      "args": ["-y", "mcp-teleprompter"],
       "env": {
         "PROMPT_STORAGE_PATH": "/path/to/your/prompts-directory"
       }
